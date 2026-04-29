@@ -1,0 +1,85 @@
+/* generic.css - Structure de base commune à tous les thèmes */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+#app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+#game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 10;
+}
+
+#counter {
+  font-size: 15vw;
+  font-weight: bold;
+  line-height: 1;
+  user-select: none;
+}
+
+#message-box {
+  margin-top: 2rem;
+  font-size: 2rem;
+  min-height: 3rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#prizes-display {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+  color: white;
+  text-align: left;
+  z-index: 100;
+}
+#prizes-display h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+#prizes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+}
+#prizes-list li {
+  margin-bottom: 0.2rem;
+}
+
+/* Admin panel base structure */
+#admin-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  color: black;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  z-index: 1000;
+  min-width: 300px;
+}

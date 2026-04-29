@@ -1,0 +1,249 @@
+export default class AdminPanel {
+  constructor(engine) {
+    this.engine = engine;
+    this.panelElement = document.getElementById('admin-panel');
+    this.isAuthenticated = false;
+
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    document.addEventListener('keydown', (e) => {
+      // Raccourci: Shift + A (utilise e.key pour gérer AZERTY/QWERTY correctement)
+      if (e.shiftKey && e.key.toLowerCase() === 'a' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        this.togglePanel();
+      }
+    });
+  }
+
+  togglePanel() {
+    if (this.panelElement.classList.contains('hidden')) {
+      this.showPanel();
+    } else {
+      this.hidePanel();
+    }
+  }
+
+  hidePanel() {
+    this.panelElement.classList.add('hidden');
+  }
+
+  showPanel() {
+    this.panelElement.classList.remove('hidden');
+
+    if (!this.isAuthenticated) {
+      this.renderLogin();
+    } else {
+      this.renderConfig();
+    }
+  }
+
+  renderLogin() {
+    this.panelElement.innerHTML = `
+      <h2 style="margin-top: 0;">Administration</h2>
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; margin-bottom: 0.5rem;">Mot de passe :</label>
+        <input type="password" id="admin-pwd" style="padding: 0.5rem; width: 100%; box-sizing: border-box;" />
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="admin-login-btn" style="padding: 0.5rem 1rem; cursor: pointer;">Valider</button>
+        <button id="admin-close-btn" style="padding: 0.5rem 1rem; cursor: pointer;">Fermer</button>
+      </div>
+    `;
+
+    document.getElementById('admin-login-btn').addEventListener('click', () => {
+      const pwd = document.getElementById('admin-pwd').value;
+      if (pwd === import.meta.env.VITE_ADMIN_PASSWORD) {
+        this.isAuthenticated = true;
+        this.renderConfig();
+      } else {
+        alert("Mot de passe incorrect");
+      }
+    });
+
+    // Enter key support for login
+    document.getElementById('admin-pwd').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('admin-login-btn').click();
+      }
+    });
+
+    document.getElementById('admin-close-btn').addEventListener('click', () => this.hidePanel());
+
+    // Focus the password input
+    setTimeout(() => document.getElementById('admin-pwd').focus(), 50);
+  }
+
+  getConfig() {
+    const saved = localStorage.getItem('chrono-win-config');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) { }
+    }
+    // Return default equivalent to engine fallback
+    return {
+      targetValue: 10000,
+      timeDivider: 10,
+      theme: 'maya',
+      prizes: [
+        { min: 998, max: 1002, name: 'Une peluche' },
+        { min: 900, max: 1100, name: 'Des stickers' }
+      ]
+    };
+  }
+
+  renderConfig() {
+    const config = this.getConfig();
+
+    let html = `
+      <h2 style="margin-top: 0;">Configuration</h2>
+      
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-weight: bold;">Chiffre cible :</label>
+        <input type="number" id="config-target" value="${config.targetValue}" style="padding: 0.5rem; width: 100%; box-sizing: border-box;" />
+      </div>
+      
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-weight: bold;">Diviseur de temps (10 = centièmes) :</label>
+        <input type="number" id="config-divider" value="${config.timeDivider}" style="padding: 0.5rem; width: 100%; box-sizing: border-box;" />
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-weight: bold;">Thème Graphique :</label>
+        <select id="config-theme" style="padding: 0.5rem; width: 100%; box-sizing: border-box;">
+          <option value="generic" ${config.theme === 'generic' ? 'selected' : ''}>Générique (Minimaliste)</option>
+          <option value="matrix" ${config.theme === 'matrix' ? 'selected' : ''}>Matrix (Pluie Numérique)</option>
+          <option value="maya" ${config.theme === 'maya' || !config.theme ? 'selected' : ''}>Divinités Mayas</option>
+        </select>
+      </div>
+      
+      <h3 style="margin-bottom: 0.5rem;">Lots et Fourchettes</h3>
+      <div id="prizes-container" style="max-height: 200px; overflow-y: auto; margin-bottom: 1rem;">
+    `;
+
+    config.prizes.forEach((prize) => {
+      // Rétrocompatibilité ou nouveau format
+      const ruleStr = prize.rule || (prize.min !== undefined ? `${prize.min}-${prize.max}` : '');
+      html += this.getPrizeHTML(ruleStr, prize.name, prize.isHidden || false);
+    });
+
+    html += `
+      </div>
+      <button id="add-prize-btn" style="padding: 0.5rem; margin-bottom: 1rem; cursor: pointer;">+ Ajouter un lot</button>
+      
+      <hr style="border: none; border-top: 1px solid #ccc; margin-bottom: 1rem;"/>
+      
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="save-config-btn" style="background: #4CAF50; color: white; font-weight: bold; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">Sauvegarder</button>
+        <button id="admin-close-btn" style="padding: 0.5rem 1rem; cursor: pointer;">Fermer</button>
+      </div>
+    `;
+
+    this.panelElement.innerHTML = html;
+
+    // Bind events
+    document.getElementById('add-prize-btn').addEventListener('click', () => {
+      const container = document.getElementById('prizes-container');
+      const div = document.createElement('div');
+      div.innerHTML = this.getPrizeHTML('', '', false);
+      container.appendChild(div.firstElementChild);
+    });
+
+    document.getElementById('save-config-btn').addEventListener('click', () => {
+      this.saveConfig();
+    });
+
+    document.getElementById('admin-close-btn').addEventListener('click', () => this.hidePanel());
+  }
+
+  getPrizeHTML(rule, name, isHidden) {
+    return `
+      <div class="prize-row" style="margin-bottom: 0.5rem; display: flex; gap: 0.5rem; align-items: center;">
+        <input type="text" class="prize-rule" value="${rule}" placeholder="Ex: 50-80,90" style="width: 150px; padding: 0.25rem;" />
+        <input type="text" class="prize-name" value="${name}" placeholder="Nom du lot" style="flex: 1; padding: 0.25rem;" />
+        <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 0.2rem; cursor: pointer;">
+          <input type="checkbox" class="prize-hidden" ${isHidden ? 'checked' : ''} /> Caché
+        </label>
+        <button onclick="this.parentElement.remove()" style="cursor: pointer; padding: 0.25rem 0.5rem;">X</button>
+      </div>
+    `;
+  }
+
+  parseRules(ruleStr) {
+    const numbers = new Set();
+    if (!ruleStr) return [];
+    
+    const parts = ruleStr.split(',');
+    for (let part of parts) {
+      part = part.trim();
+      if (part.includes('-')) {
+        const [startStr, endStr] = part.split('-');
+        const start = parseInt(startStr, 10);
+        const end = parseInt(endStr, 10);
+        if (!isNaN(start) && !isNaN(end) && start <= end) {
+          for (let i = start; i <= end; i++) {
+            numbers.add(i);
+          }
+        }
+      } else {
+        const num = parseInt(part, 10);
+        if (!isNaN(num)) {
+          numbers.add(num);
+        }
+      }
+    }
+    return Array.from(numbers);
+  }
+
+  saveConfig() {
+    const targetValue = parseInt(document.getElementById('config-target').value, 10) || 10000;
+    let timeDivider = parseInt(document.getElementById('config-divider').value, 10);
+    if (isNaN(timeDivider) || timeDivider <= 0) timeDivider = 10;
+
+    const prizes = [];
+    const usedNumbers = new Set();
+    let conflictError = null;
+
+    const rows = document.querySelectorAll('.prize-row');
+    rows.forEach(row => {
+      const rule = row.querySelector('.prize-rule').value;
+      const name = row.querySelector('.prize-name').value;
+      const isHidden = row.querySelector('.prize-hidden').checked;
+      
+      if (rule.trim() !== '' && name.trim() !== '') {
+        const parsedNumbers = this.parseRules(rule);
+        
+        for (const num of parsedNumbers) {
+          if (usedNumbers.has(num)) {
+            conflictError = num;
+          }
+          usedNumbers.add(num);
+        }
+        
+        prizes.push({ 
+          rule: rule.trim(), 
+          name: name.trim(), 
+          isHidden,
+          numbers: parsedNumbers
+        });
+      }
+    });
+
+    if (conflictError !== null) {
+      alert(`Erreur : Le chiffre ${conflictError} est assigné à plusieurs lots en même temps. Veuillez corriger le conflit.`);
+      return;
+    }
+
+    const theme = document.getElementById('config-theme').value;
+
+    const newConfig = { targetValue, timeDivider, theme, prizes };
+    localStorage.setItem('chrono-win-config', JSON.stringify(newConfig));
+
+    this.engine.loadConfig();
+    this.hidePanel();
+    alert("Configuration sauvegardée ! L'application va se recharger pour appliquer le thème.");
+    window.location.reload();
+  }
+}
