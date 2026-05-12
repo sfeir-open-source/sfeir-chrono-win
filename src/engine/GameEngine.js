@@ -103,8 +103,13 @@ export default class GameEngine {
   }
 
   handleKeyDown(event) {
-    if (event.code === 'Space') {
-      event.preventDefault(); // Empêche le scroll de la page
+    // Ne pas déclencher si on est dans un champ de saisie
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || event.target.tagName === 'TEXTAREA') {
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Empêche le scroll ou la validation de formulaire par défaut
       
       if (this.state === STATE_IDLE) {
         this.startRun();

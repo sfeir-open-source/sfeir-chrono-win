@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else if (activeThemeName === 'generic') {
     const { default: GenericTheme } = await import('./themes/GenericTheme.js');
     theme = new GenericTheme();
+  } else if (activeThemeName === 'stranger_things') {
+    const { default: StrangerThingsTheme } = await import('./themes/stranger_things/theme.js');
+    theme = new StrangerThingsTheme();
   } else {
     const { default: MayaTheme } = await import('./themes/maya/theme.js');
     theme = new MayaTheme();

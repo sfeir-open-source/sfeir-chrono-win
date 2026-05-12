@@ -116,6 +116,7 @@ export default class AdminPanel {
           <option value="generic" ${config.theme === 'generic' ? 'selected' : ''}>Générique (Minimaliste)</option>
           <option value="matrix" ${config.theme === 'matrix' ? 'selected' : ''}>Matrix (Pluie Numérique)</option>
           <option value="maya" ${config.theme === 'maya' || !config.theme ? 'selected' : ''}>Divinités Mayas</option>
+          <option value="stranger_things" ${config.theme === 'stranger_things' ? 'selected' : ''}>Stranger Things</option>
         </select>
       </div>
       

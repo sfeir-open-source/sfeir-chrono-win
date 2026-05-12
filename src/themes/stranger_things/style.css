@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@700&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #000;
+  background-image: url('./assets/bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  font-family: sans-serif;
+}
+
+#stranger-things-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1; /* Derrière le compteur mais au-dessus du fond */
+}
+
+#game-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid #ff0000;
+  box-shadow: 0 0 20px #ff0000, inset 0 0 15px #ff0000;
+  border-radius: 15px;
+  
+  /* Fixer la taille pour que le conteneur ne saute pas */
+  width: 60vw;
+  height: 70vh;
+  min-width: 500px;
+  min-height: 500px;
+  margin: auto;
+}
+
+#counter {
+  font-family: 'Playfair Display SC', serif;
+  font-size: 25rem;
+  font-weight: 700;
+  color: transparent;
+  /* Effet Néon Rouge Stranger Things */
+  -webkit-text-stroke: 6px #ff0000;
+  text-shadow: 
+    0 0 10px #ff0000, 
+    0 0 20px #ff0000, 
+    0 0 40px #ff0000, 
+    0 0 80px #b30000;
+  margin: 0;
+  margin-top: -5rem; /* Compense l'espace vide naturel en haut de la police */
+  line-height: 1;
+}
+
+#message-box {
+  font-family: 'Playfair Display SC', serif;
+  margin-top: 3rem;
+  font-size: 2.5rem;
+  color: #ff0000;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px #ff0000;
+  
+  /* Sous-cadre Stranger Things */
+  padding: 1rem 3rem;
+  border: 2px solid #ff0000;
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 15px #ff0000, inset 0 0 10px #ff0000;
+  border-radius: 8px;
+}
+
+#message-box.hidden {
+  display: none;
+}
+
+#prizes-display {
+  position: absolute;
+  top: 2rem; /* Aligné en haut comme Matrix */
+  right: 2rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 10px #00ffff;
+  padding: 1rem;
+  border-radius: 8px;
+  z-index: 10;
+  font-family: 'Playfair Display SC', serif;
+  width: max-content;
+  max-width: 25vw;
+}
+
+#prizes-display h3 {
+  margin-top: 0;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+}
+
+#prizes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#prizes-list li {
+  margin-bottom: 0.5rem;
+  color: #e0e0e0;
+}

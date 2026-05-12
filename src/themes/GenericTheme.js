@@ -33,7 +33,7 @@ export default class GenericTheme {
   showStartScreen() {
     this.updateCounter(0);
     if (this.messageBox) {
-      this.messageBox.textContent = "Appuyez sur Espace pour lancer";
+      this.messageBox.textContent = "Appuyez sur Entrée pour lancer";
       this.messageBox.classList.remove('hidden');
     }
   }
