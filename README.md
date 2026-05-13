@@ -43,7 +43,14 @@ Ouvrez le lien généré (généralement `http://localhost:3000`) dans votre nav
 - Un message vous indiquera si vous avez gagné un lot.
 - Appuyez encore sur **Entrée** pour ouvrir le formulaire de collecte (s'il est configuré), ou pour réinitialiser le jeu.
 - Dans le formulaire, remplissez vos informations. Vous pouvez fermer la popup via le bouton **Fermer** ou la touche **Echap**.
-- En cas de fermeture accidentelle du formulaire, appuyez sur `Shift + F` pour le rouvrir.
+  - En cas de fermeture accidentelle du formulaire, appuyez sur `Shift + F` pour le rouvrir.
+
+### Raccourcis Clavier
+- **Entrée** : Démarrer / Arrêter le compteur / Passer à l'écran suivant
+- **Echap** : Fermer le formulaire ou le panneau des résultats
+- **Shift + A** : Ouvrir le panneau d'administration
+- **Shift + F** : Rouvrir manuellement le formulaire (si fermé par erreur)
+- **Shift + L** : Ouvrir le panneau des résultats (tableau récapitulatif des participants)
 
 ### Administration
 - Sur la page du jeu, tapez `Shift + A` sur votre clavier pour ouvrir le panneau d'administration caché.
