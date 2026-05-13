@@ -4,6 +4,7 @@ const STATE_IDLE = 'IDLE';
 const STATE_RUNNING = 'RUNNING';
 const STATE_FINISHED = 'FINISHED';
 const STATE_FORM = 'FORM';
+const STATE_RESULTS = 'RESULTS';
 
 export default class GameEngine {
   constructor(theme) {
@@ -22,6 +23,7 @@ export default class GameEngine {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.loop = this.loop.bind(this);
     this.closeForm = this.closeForm.bind(this);
+    this.closeResults = this.closeResults.bind(this);
   }
 
   loadConfig() {
@@ -76,6 +78,11 @@ export default class GameEngine {
     const closeBtn = document.getElementById('close-form-btn');
     if (closeBtn) {
       closeBtn.addEventListener('click', this.closeForm);
+    }
+
+    const closeResultsBtn = document.getElementById('close-results-btn');
+    if (closeResultsBtn) {
+      closeResultsBtn.addEventListener('click', this.closeResults);
     }
 
     const nativeForm = document.getElementById('native-form');
@@ -144,6 +151,73 @@ export default class GameEngine {
     this.resetToIdle();
   }
 
+  async openResults() {
+    this.state = STATE_RESULTS;
+    const popup = document.getElementById('results-popup');
+    const tbody = document.querySelector('#results-table tbody');
+    
+    if (popup && tbody) {
+      try {
+        const participants = await this.db.getAllParticipants();
+        
+        // Calculate lot for each
+        const enhancedParticipants = participants.map(p => {
+          let wonPrize = "Aucun";
+          for (const prize of this.prizes) {
+            if (prize.numbersSet && prize.numbersSet.has(parseInt(p.score, 10))) {
+              wonPrize = prize.name;
+              break; 
+            }
+          }
+          return { ...p, lot: wonPrize };
+        });
+        
+        // Sort: Lot gagné (ceux qui ont gagné en premier), puis Score, puis Date
+        enhancedParticipants.sort((a, b) => {
+          const aWon = a.lot !== "Aucun";
+          const bWon = b.lot !== "Aucun";
+          
+          if (aWon && !bWon) return -1;
+          if (!aWon && bWon) return 1;
+          
+          // Si les deux ont gagné ou les deux n'ont pas gagné, on trie par score
+          const scoreDiff = parseInt(a.score, 10) - parseInt(b.score, 10);
+          if (scoreDiff !== 0) return scoreDiff;
+          
+          // Si même score, on trie par date
+          return new Date(a.date) - new Date(b.date);
+        });
+        
+        // Render
+        tbody.innerHTML = enhancedParticipants.map(p => `
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 0.5rem;">${new Date(p.date).toLocaleString()}</td>
+            <td style="padding: 0.5rem; font-weight: bold;">${p.score}</td>
+            <td style="padding: 0.5rem; font-weight: ${p.lot !== 'Aucun' ? 'bold' : 'normal'}; color: ${p.lot !== 'Aucun' ? '#4CAF50' : '#333'}">${p.lot}</td>
+            <td style="padding: 0.5rem;">${p.nom}</td>
+            <td style="padding: 0.5rem;">${p.prenom}</td>
+            <td style="padding: 0.5rem;">${p.telephone}</td>
+            <td style="padding: 0.5rem;">${p.email}</td>
+          </tr>
+        `).join('');
+        
+        popup.classList.remove('hidden');
+      } catch (err) {
+        console.error("Erreur chargement résultats", err);
+        alert("Impossible de charger les résultats.");
+        this.resetToIdle();
+      }
+    } else {
+      this.resetToIdle();
+    }
+  }
+
+  closeResults() {
+    const popup = document.getElementById('results-popup');
+    if (popup) popup.classList.add('hidden');
+    this.resetToIdle();
+  }
+
   loop(timestamp) {
     if (this.state !== STATE_RUNNING) return;
     
@@ -168,6 +242,8 @@ export default class GameEngine {
     if (event.key === 'Escape') {
       if (this.state === STATE_FORM) {
         this.closeForm();
+      } else if (this.state === STATE_RESULTS) {
+        this.closeResults();
       }
       return;
     }
@@ -177,6 +253,14 @@ export default class GameEngine {
       // On peut rouvrir le formulaire si on est IDLE ou FINISHED
       if (this.state === STATE_IDLE || this.state === STATE_FINISHED) {
         this.openForm();
+      }
+      return;
+    }
+
+    if (event.shiftKey && event.key.toLowerCase() === 'l') {
+      event.preventDefault();
+      if (this.state === STATE_IDLE || this.state === STATE_FINISHED) {
+        this.openResults();
       }
       return;
     }
