@@ -136,9 +136,14 @@ export default class AdminPanel {
       
       <hr style="border: none; border-top: 1px solid #ccc; margin-bottom: 1rem;"/>
       
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+        <button id="export-csv-btn" style="padding: 0.5rem 1rem; cursor: pointer; background: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold;">Exporter les participants (CSV)</button>
+        <button id="reset-db-btn" style="padding: 0.5rem 1rem; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px; font-weight: bold;">Remise à zéro de la base</button>
+      </div>
+
       <div style="display: flex; gap: 0.5rem;">
-        <button id="save-config-btn" style="background: #4CAF50; color: white; font-weight: bold; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">Sauvegarder</button>
-        <button id="admin-close-btn" style="padding: 0.5rem 1rem; cursor: pointer;">Fermer</button>
+        <button id="save-config-btn" style="background: #4CAF50; color: white; font-weight: bold; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">Sauvegarder Configuration</button>
+        <button id="admin-close-btn" style="padding: 0.5rem 1rem; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: white;">Fermer</button>
       </div>
     `;
 
@@ -157,6 +162,55 @@ export default class AdminPanel {
     });
 
     document.getElementById('admin-close-btn').addEventListener('click', () => this.hidePanel());
+
+    document.getElementById('export-csv-btn').addEventListener('click', async () => {
+      try {
+        const participants = await this.engine.db.getAllParticipants();
+        if (participants.length === 0) {
+          alert("Aucun participant à exporter.");
+          return;
+        }
+        
+        const header = ["Date", "Score", "Nom", "Prénom", "Email", "Téléphone", "Formation", "Opportunité"];
+        const rows = participants.map(p => [
+          p.date,
+          p.score,
+          p.nom,
+          p.prenom,
+          p.email,
+          p.telephone,
+          p.formation ? "Oui" : "Non",
+          p.opportunite ? "Oui" : "Non"
+        ]);
+        
+        let csvContent = "data:text/csv;charset=utf-8," 
+            + header.join(";") + "\n"
+            + rows.map(e => e.join(";")).join("\n");
+            
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `participants_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (e) {
+        console.error(e);
+        alert("Erreur lors de l'export.");
+      }
+    });
+
+    document.getElementById('reset-db-btn').addEventListener('click', async () => {
+      if (confirm("Attention ! Voulez-vous vraiment supprimer toutes les données des participants ? Cette action est irréversible.")) {
+        try {
+          await this.engine.db.clearDatabase();
+          alert("Base de données réinitialisée.");
+        } catch(e) {
+          console.error(e);
+          alert("Erreur lors de la remise à zéro.");
+        }
+      }
+    });
   }
 
   getPrizeHTML(rule, name, isHidden) {

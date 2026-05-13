@@ -4,6 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chrono Win</title>
+    <style>
+      #form-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      #form-popup.hidden {
+        display: none !important;
+      }
+      #shortcuts-info {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
+        z-index: 500;
+        font-family: sans-serif;
+        pointer-events: none;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
@@ -19,6 +47,71 @@
     </div>
     <!-- Admin panel placeholder -->
     <div id="admin-panel" class="hidden"></div>
+    
+    <!-- Form Popup -->
+    <div id="form-popup" class="hidden">
+      <div style="background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; color: #333;">
+        <h2 style="margin-top: 0; color: #000;">Enregistrement de votre score</h2>
+        <form id="native-form">
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: bold; margin-bottom: 0.2rem;">Score</label>
+            <input type="text" id="form-score" name="score" readonly style="width: 100%; padding: 0.5rem; box-sizing: border-box; background: #eee; border: 1px solid #ccc; font-weight: bold;">
+          </div>
+          <div style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+            <div style="flex: 1;">
+              <label style="display: block; font-weight: bold; margin-bottom: 0.2rem;">Prénom *</label>
+              <input type="text" id="form-prenom" name="prenom" required style="width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid #ccc;">
+            </div>
+            <div style="flex: 1;">
+              <label style="display: block; font-weight: bold; margin-bottom: 0.2rem;">Nom *</label>
+              <input type="text" id="form-nom" name="nom" required style="width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid #ccc;">
+            </div>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: bold; margin-bottom: 0.2rem;">Email *</label>
+            <input type="email" id="form-email" name="email" required style="width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid #ccc;">
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: bold; margin-bottom: 0.2rem;">Téléphone *</label>
+            <input type="tel" id="form-telephone" name="telephone" required style="width: 100%; padding: 0.5rem; box-sizing: border-box; border: 1px solid #ccc;">
+          </div>
+          <div style="margin-bottom: 0.5rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="checkbox" id="form-formation" name="formation"> Besoin de formation
+            </label>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="checkbox" id="form-opportunite" name="opportunite"> Écoute d'opportunité
+            </label>
+          </div>
+          
+          <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #ddd;">
+          
+          <div style="margin-bottom: 1rem; font-size: 0.8rem; color: #555; line-height: 1.4;">
+            <p style="margin-top: 0;"><strong>Détail des CGV :</strong></p>
+            <p>Nous n'utiliserons vos données que si vous souhaitez être recontacté. De plus nous ne les utiliserons que dans le cadre des mentions que vous avez cochées.</p>
+            <p>SFEIR s'engage à protéger et à respecter votre vie privée. Nous n'utiliserons vos données personnelles que si vous souhaitez être recontacté par nos services. Nous aimerions vous contacter ponctuellement au sujet de nos actions et services, ainsi que d'autres contenus susceptibles de vous intéresser. Si vous consentez à ce que nous vous contactions à cette fin, veuillez nous l'indiquer en cochant la case qui vous correspond le mieux.</p>
+            <p>Vous pouvez vous désabonner de ces communications à tout moment.</p>
+            <p>En cliquant sur « Envoyer » ci-dessous, vous autorisez l’entreprise SFEIR à stocker et traiter les données personnelles soumises ci-dessus afin qu’elle vous fournisse le contenu demandé.</p>
+            
+            <label style="display: flex; align-items: start; gap: 0.5rem; margin-top: 1rem; cursor: pointer; color: black; font-weight: bold; font-size: 0.9rem;">
+              <input type="checkbox" id="form-cgv" name="cgv" required style="margin-top: 0.1rem;"> J'accepte les conditions générales ci-dessus *
+            </label>
+          </div>
+
+          <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+            <button type="button" id="close-form-btn" style="padding: 0.5rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: #fff; color: #333;">Annuler (Echap)</button>
+            <button type="submit" style="padding: 0.5rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 4px; border: none; background: #4CAF50; color: white; font-weight: bold;">Envoyer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Shortcuts -->
+    <div id="shortcuts-info">
+      Shift+A : Admin | Shift+F : Rouvrir le Formulaire
+    </div>
     
     <script type="module" src="/src/main.js"></script>
   </body>

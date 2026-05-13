@@ -1,0 +1,22 @@
+Score (non éditable, pré-rempli)
+Adresse email (obligatoire)
+Nom (obligatoire)
+Prénom (obligatoire)
+Numéro de téléphone (obligatoire)
+Besoin de formation (cases à cocher)
+Écoute d'opportunité (case à cocher)
+CGV (Zone de texte non éditable)
+
+---
+Détail des CGV: 
+Nous n'utiliserons vos données que si vous souhaitez être recontacté. De plus nous ne les utiliserons que dans le cadre des mentions que vous avez cochées.
+
+SFEIR s'engage à protéger et à respecter votre vie privée. Nous n'utiliserons vos données personnelles que si vous souhaitez être recontacté par nos services. Nous aimerions vous contacter ponctuellement au sujet de nos actions et services, ainsi que d'autres contenus susceptibles de vous intéresser. Si vous consentez à ce que nous vous contactions à cette fin, veuillez nous l'indiquer en cochant la case qui vous correspond le mieux.
+Vous pouvez vous désabonner de ces communications à tout moment.
+En cliquant sur « Envoyer » ci-dessous, vous autorisez l’entreprise SFEIR à stocker et traiter les données personnelles soumises ci-dessus afin qu’elle vous fournisse le contenu demandé.
+
+---
+**Note sur l'intégration :**
+Ces champs sont intégrés nativement dans le jeu. À la fin d'une partie, un formulaire s'ouvre pour collecter ces informations.
+Les données sont sauvegardées de manière sécurisée et locale dans la base de données du navigateur (IndexedDB).
+Vous pouvez exporter ces données au format CSV ou vider la base depuis le panneau d'administration (`Shift + A`).

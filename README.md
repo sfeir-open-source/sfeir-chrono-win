@@ -6,7 +6,8 @@ Un jeu d'animation web ultra-réactif et hautement configurable, parfait pour de
 - **Moteur 100% Vanilla JS** performant basé sur `requestAnimationFrame`.
 - **Thèmes dynamiques** : Possibilité de basculer instantanément l'esthétique du jeu (Matrix, Mayas, etc.).
 - **Panneau d'administration sécurisé** : Configuration des lots, de la difficulté et du design à chaud.
-- **Compatible USB** : Conçu pour se lancer et s'arrêter via la touche **Espace**, idéal pour brancher un gros bouton poussoir "Buzzer" en USB.
+- **Compatible USB** : Conçu pour se lancer et s'arrêter via la touche **Entrée** (ou bouton USB mappé sur Entrée).
+- **Collecte de données native** : Un formulaire natif (remplaçant le Google Form) s'affiche en fin de partie pour enregistrer les informations des participants. Les données sont sauvegardées localement (IndexedDB) pour une sécurité maximale et peuvent être exportées en CSV via le panneau d'administration.
 
 ## Installation et Lancement
 
@@ -37,15 +38,19 @@ Ouvrez le lien généré (généralement `http://localhost:3000`) dans votre nav
 ## Guide d'Utilisation
 
 ### Jouer
-- Appuyez sur **Espace** pour démarrer le compteur.
-- Appuyez de nouveau sur **Espace** pour l'arrêter.
+- Appuyez sur **Entrée** pour démarrer le compteur.
+- Appuyez de nouveau sur **Entrée** pour l'arrêter.
 - Un message vous indiquera si vous avez gagné un lot.
-- Appuyez encore sur **Espace** pour réinitialiser le jeu pour le joueur suivant.
+- Appuyez encore sur **Entrée** pour ouvrir le formulaire de collecte (s'il est configuré), ou pour réinitialiser le jeu.
+- Dans le formulaire, remplissez vos informations. Vous pouvez fermer la popup via le bouton **Fermer** ou la touche **Echap**.
+- En cas de fermeture accidentelle du formulaire, appuyez sur `Shift + F` pour le rouvrir.
 
 ### Administration
 - Sur la page du jeu, tapez `Shift + A` sur votre clavier pour ouvrir le panneau d'administration caché.
 - Saisissez votre mot de passe (celui du fichier `.env`).
 - Vous pouvez y configurer :
+  - **Export CSV** : Un bouton pour télécharger la liste complète des participants et leurs scores.
+  - **Remise à zéro de la base** : Un bouton pour vider toutes les données collectées.
   - **Le chiffre cible** (le plafond idéal).
   - **Le diviseur de temps** (gère la vitesse de défilement du compteur).
   - **Le thème graphique** (ex: Matrix, Divinités Mayas, Générique).
