@@ -4,7 +4,7 @@ Voici la liste des thèmes prévus pour les prochaines itérations :
 
 - [ ] **Stranger Things**
   - *Note : Image d'inspiration requise de la part de l'utilisateur.*
-- [ ] **Événement Google**
+- [x] **Événement Google**
   - *Note : Image d'inspiration requise de la part de l'utilisateur.*
 
 > [!IMPORTANT]

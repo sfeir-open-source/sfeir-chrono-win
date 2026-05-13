@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else if (activeThemeName === 'stranger_things') {
     const { default: StrangerThingsTheme } = await import('./themes/stranger_things/theme.js');
     theme = new StrangerThingsTheme();
+  } else if (activeThemeName === 'google') {
+    const { default: GoogleTheme } = await import('./themes/google/GoogleTheme.js');
+    theme = new GoogleTheme();
   } else {
     const { default: MayaTheme } = await import('./themes/maya/theme.js');
     theme = new MayaTheme();
