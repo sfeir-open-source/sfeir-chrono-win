@@ -1,9 +1,9 @@
 import GenericTheme from '../GenericTheme.js';
-import './style.css';
 
 export default class MatrixTheme extends GenericTheme {
   constructor() {
     super();
+    this.loadCSS('src/themes/matrix/style.css');
     this.initCanvas();
   }
 

@@ -26,6 +26,21 @@ export default class GameEngine {
     this.closeResults = this.closeResults.bind(this);
   }
 
+  getAdminPassword() {
+    const envPassword = (typeof import.meta.env !== 'undefined' && import.meta.env) ? import.meta.env.VITE_ADMIN_PASSWORD : null;
+    return localStorage.getItem('chrono-win-admin-password') || envPassword || 'sfeir';
+  }
+
+  checkAdminPassword(password) {
+    return password === this.getAdminPassword();
+  }
+
+  saveAdminPassword(newPassword) {
+    if (newPassword !== undefined && newPassword.trim() !== '') {
+      localStorage.setItem('chrono-win-admin-password', newPassword);
+    }
+  }
+
   loadConfig() {
     const saved = localStorage.getItem('chrono-win-config');
     let config;
@@ -261,8 +276,7 @@ export default class GameEngine {
       event.preventDefault();
       if (this.state === STATE_IDLE || this.state === STATE_FINISHED) {
         const pwd = prompt("Entrez le mot de passe pour accéder aux résultats :");
-        const adminPassword = localStorage.getItem('chrono-win-admin-password') || import.meta.env.VITE_ADMIN_PASSWORD || 'sfeir';
-        if (pwd === adminPassword) {
+        if (this.checkAdminPassword(pwd)) {
           this.openResults();
         } else if (pwd !== null) {
           alert("Mot de passe incorrect");

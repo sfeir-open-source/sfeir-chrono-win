@@ -1,9 +1,9 @@
 import GenericTheme from '../GenericTheme.js';
-import './style.css';
 
 export default class StrangerThingsTheme extends GenericTheme {
   constructor() {
     super();
+    this.loadCSS('src/themes/stranger_things/style.css');
     this.initCanvas();
   }
 

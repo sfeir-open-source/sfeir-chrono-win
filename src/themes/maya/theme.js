@@ -1,9 +1,9 @@
 import GenericTheme from '../GenericTheme.js';
-import './style.css';
 
 export default class MayaTheme extends GenericTheme {
   constructor() {
     super();
+    this.loadCSS('src/themes/maya/style.css');
     this.initCanvas();
   }
 

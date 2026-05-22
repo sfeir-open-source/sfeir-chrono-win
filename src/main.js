@@ -1,4 +1,3 @@
-import './themes/generic.css';
 import GameEngine from './engine/GameEngine.js';
 import AdminPanel from './engine/AdminPanel.js';
 

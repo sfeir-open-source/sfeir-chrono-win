@@ -1,9 +1,18 @@
 export default class GenericTheme {
   constructor() {
+    this.loadCSS('src/themes/generic.css');
     this.counterElement = document.getElementById('counter');
     this.messageBox = document.getElementById('message-box');
     this.prizesDisplay = document.getElementById('prizes-display');
     this.prizesList = document.getElementById('prizes-list');
+  }
+
+  loadCSS(href) {
+    if (document.querySelector(`link[href="${href}"]`)) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
   }
 
   updatePrizesList(prizes) {

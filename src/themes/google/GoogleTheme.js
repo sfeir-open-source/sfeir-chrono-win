@@ -1,9 +1,9 @@
 import GenericTheme from '../GenericTheme.js';
-import './google.css';
 
 export default class GoogleTheme extends GenericTheme {
   constructor() {
     super();
+    this.loadCSS('src/themes/google/google.css');
     this.initShapes();
   }
 
