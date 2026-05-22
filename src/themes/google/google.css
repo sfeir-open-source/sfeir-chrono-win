@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Product+Sans&family=Google+Sans:wght@400;500;700&display=swap');
+
 :root {
   --google-blue: #4285F4;
   --google-red: #EA4335;
@@ -6,8 +8,6 @@
   --google-dark: #202124;
   --google-bg: #FFFFFF;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Product+Sans&family=Google+Sans:wght@400;500;700&display=swap');
 
 /* Basic setup */
 body.theme-google {

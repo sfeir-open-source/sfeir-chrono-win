@@ -260,7 +260,13 @@ export default class GameEngine {
     if (event.shiftKey && event.key.toLowerCase() === 'l') {
       event.preventDefault();
       if (this.state === STATE_IDLE || this.state === STATE_FINISHED) {
-        this.openResults();
+        const pwd = prompt("Entrez le mot de passe pour accéder aux résultats :");
+        const adminPassword = localStorage.getItem('chrono-win-admin-password') || import.meta.env.VITE_ADMIN_PASSWORD || 'sfeir';
+        if (pwd === adminPassword) {
+          this.openResults();
+        } else if (pwd !== null) {
+          alert("Mot de passe incorrect");
+        }
       }
       return;
     }

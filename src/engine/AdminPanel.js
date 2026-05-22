@@ -7,6 +7,10 @@ export default class AdminPanel {
     this.bindEvents();
   }
 
+  getAdminPassword() {
+    return localStorage.getItem('chrono-win-admin-password') || import.meta.env.VITE_ADMIN_PASSWORD || 'sfeir';
+  }
+
   bindEvents() {
     document.addEventListener('keydown', (e) => {
       // Raccourci: Shift + A (utilise e.key pour gérer AZERTY/QWERTY correctement)
@@ -54,7 +58,7 @@ export default class AdminPanel {
 
     document.getElementById('admin-login-btn').addEventListener('click', () => {
       const pwd = document.getElementById('admin-pwd').value;
-      if (pwd === import.meta.env.VITE_ADMIN_PASSWORD) {
+      if (pwd === this.getAdminPassword()) {
         this.isAuthenticated = true;
         this.renderConfig();
       } else {
@@ -108,6 +112,11 @@ export default class AdminPanel {
       <div style="margin-bottom: 1rem;">
         <label style="display: block; font-weight: bold;">Diviseur de temps (10 = centièmes) :</label>
         <input type="number" id="config-divider" value="${config.timeDivider}" style="padding: 0.5rem; width: 100%; box-sizing: border-box;" />
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="display: block; font-weight: bold;">Mot de passe Admin :</label>
+        <input type="password" id="config-password" value="${this.getAdminPassword()}" style="padding: 0.5rem; width: 100%; box-sizing: border-box;" />
       </div>
 
       <div style="margin-bottom: 1rem;">
@@ -257,6 +266,11 @@ export default class AdminPanel {
     const targetValue = parseInt(document.getElementById('config-target').value, 10) || 10000;
     let timeDivider = parseInt(document.getElementById('config-divider').value, 10);
     if (isNaN(timeDivider) || timeDivider <= 0) timeDivider = 10;
+
+    const newPassword = document.getElementById('config-password').value;
+    if (newPassword !== undefined && newPassword.trim() !== '') {
+      localStorage.setItem('chrono-win-admin-password', newPassword);
+    }
 
     const prizes = [];
     const usedNumbers = new Set();
