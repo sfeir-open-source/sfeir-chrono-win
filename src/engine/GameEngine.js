@@ -14,6 +14,8 @@ export default class GameEngine {
     this.startTime = 0;
     this.currentValue = 0;
     this.db = new Database();
+    this.pendingParticipantData = null;
+    this.hasSubmittedForm = false;
     
     this.loadConfig();
     
@@ -92,7 +94,13 @@ export default class GameEngine {
 
     const closeBtn = document.getElementById('close-form-btn');
     if (closeBtn) {
-      closeBtn.addEventListener('click', this.closeForm);
+      closeBtn.addEventListener('click', () => {
+        if (this.state === STATE_FORM) {
+          this.skipFormAndPlay();
+        } else {
+          this.closeForm();
+        }
+      });
     }
 
     const closeResultsBtn = document.getElementById('close-results-btn');
@@ -102,11 +110,10 @@ export default class GameEngine {
 
     const nativeForm = document.getElementById('native-form');
     if (nativeForm) {
-      nativeForm.addEventListener('submit', async (e) => {
+      nativeForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        const data = {
-          score: document.getElementById('form-score').value,
+        this.pendingParticipantData = {
           nom: document.getElementById('form-nom').value,
           prenom: document.getElementById('form-prenom').value,
           email: document.getElementById('form-email').value,
@@ -114,17 +121,29 @@ export default class GameEngine {
           formation: document.getElementById('form-formation').checked,
           opportunite: document.getElementById('form-opportunite').checked
         };
+        this.hasSubmittedForm = true;
         
-        try {
-          await this.db.saveParticipant(data);
-          nativeForm.reset();
-          this.closeForm();
-        } catch (err) {
-          console.error("Erreur sauvegarde", err);
-          alert("Erreur lors de la sauvegarde.");
-        }
+        nativeForm.reset();
+        
+        const popup = document.getElementById('form-popup');
+        if (popup) popup.classList.add('hidden');
+        
+        this.startRun();
       });
     }
+  }
+
+  skipFormAndPlay() {
+    this.pendingParticipantData = null;
+    this.hasSubmittedForm = false;
+    
+    const nativeForm = document.getElementById('native-form');
+    if (nativeForm) nativeForm.reset();
+    
+    const popup = document.getElementById('form-popup');
+    if (popup) popup.classList.add('hidden');
+    
+    this.startRun();
   }
 
   startRun() {
@@ -134,10 +153,24 @@ export default class GameEngine {
     this.animationFrameId = requestAnimationFrame(this.loop);
   }
 
-  stopRun() {
+  async stopRun() {
     this.state = STATE_FINISHED;
     cancelAnimationFrame(this.animationFrameId);
     this.checkResult();
+    
+    if (this.hasSubmittedForm && this.pendingParticipantData) {
+      const data = {
+        score: this.currentValue,
+        ...this.pendingParticipantData
+      };
+      try {
+        await this.db.saveParticipant(data);
+      } catch (err) {
+        console.error("Erreur lors de l'enregistrement automatique du score:", err);
+      }
+      this.hasSubmittedForm = false;
+      this.pendingParticipantData = null;
+    }
   }
 
   resetToIdle() {
@@ -256,7 +289,7 @@ export default class GameEngine {
 
     if (event.key === 'Escape') {
       if (this.state === STATE_FORM) {
-        this.closeForm();
+        this.skipFormAndPlay();
       } else if (this.state === STATE_RESULTS) {
         this.closeResults();
       }
@@ -289,11 +322,11 @@ export default class GameEngine {
       event.preventDefault(); // Empêche le scroll ou la validation de formulaire par défaut
       
       if (this.state === STATE_IDLE) {
-        this.startRun();
+        this.openForm();
       } else if (this.state === STATE_RUNNING) {
         this.stopRun();
       } else if (this.state === STATE_FINISHED) {
-        this.openForm();
+        this.resetToIdle();
       }
     }
   }

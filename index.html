@@ -54,7 +54,7 @@
       <div style="background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; color: #333;">
         <h2 style="margin-top: 0; color: #000;">Enregistrement de votre score</h2>
         <form id="native-form">
-          <div style="margin-bottom: 1rem;">
+          <div id="form-score-container" style="margin-bottom: 1rem; display: none;">
             <label style="display: block; font-weight: bold; margin-bottom: 0.2rem;">Score</label>
             <input type="text" id="form-score" name="score" readonly style="width: 100%; padding: 0.5rem; box-sizing: border-box; background: #eee; border: 1px solid #ccc; font-weight: bold;">
           </div>
@@ -102,8 +102,8 @@
           </div>
 
           <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
-            <button type="button" id="close-form-btn" style="padding: 0.5rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: #fff; color: #333;">Annuler (Echap)</button>
-            <button type="submit" style="padding: 0.5rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 4px; border: none; background: #4CAF50; color: white; font-weight: bold;">Envoyer</button>
+            <button type="button" id="close-form-btn" style="padding: 0.5rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: #fff; color: #333;">Passer et jouer</button>
+            <button type="submit" style="padding: 0.5rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 4px; border: none; background: #4CAF50; color: white; font-weight: bold;">Valider et jouer</button>
           </div>
         </form>
       </div>
