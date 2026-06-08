@@ -47,6 +47,14 @@ export default class GenericTheme {
     }
   }
 
+  showReadyScreen() {
+    this.updateCounter(0);
+    if (this.messageBox) {
+      this.messageBox.textContent = "Appuyez sur Entrée pour lancer le compteur";
+      this.messageBox.classList.remove('hidden');
+    }
+  }
+
   showVictory(prizeName, isHidden = false) {
     if (this.messageBox) {
       if (isHidden) {

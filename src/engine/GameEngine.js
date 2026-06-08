@@ -5,6 +5,7 @@ const STATE_RUNNING = 'RUNNING';
 const STATE_FINISHED = 'FINISHED';
 const STATE_FORM = 'FORM';
 const STATE_RESULTS = 'RESULTS';
+const STATE_READY = 'READY';
 
 export default class GameEngine {
   constructor(theme) {
@@ -128,7 +129,7 @@ export default class GameEngine {
         const popup = document.getElementById('form-popup');
         if (popup) popup.classList.add('hidden');
         
-        this.startRun();
+        this.prepareRun();
       });
     }
   }
@@ -143,7 +144,14 @@ export default class GameEngine {
     const popup = document.getElementById('form-popup');
     if (popup) popup.classList.add('hidden');
     
-    this.startRun();
+    this.prepareRun();
+  }
+
+  prepareRun() {
+    this.state = STATE_READY;
+    this.currentValue = 0;
+    this.theme.updateCounter(0);
+    this.theme.showReadyScreen();
   }
 
   startRun() {
@@ -176,6 +184,8 @@ export default class GameEngine {
   resetToIdle() {
     this.state = STATE_IDLE;
     this.currentValue = 0;
+    this.pendingParticipantData = null;
+    this.hasSubmittedForm = false;
     this.theme.showStartScreen();
   }
 
@@ -290,6 +300,8 @@ export default class GameEngine {
     if (event.key === 'Escape') {
       if (this.state === STATE_FORM) {
         this.skipFormAndPlay();
+      } else if (this.state === STATE_READY) {
+        this.resetToIdle();
       } else if (this.state === STATE_RESULTS) {
         this.closeResults();
       }
@@ -323,6 +335,8 @@ export default class GameEngine {
       
       if (this.state === STATE_IDLE) {
         this.openForm();
+      } else if (this.state === STATE_READY) {
+        this.startRun();
       } else if (this.state === STATE_RUNNING) {
         this.stopRun();
       } else if (this.state === STATE_FINISHED) {
