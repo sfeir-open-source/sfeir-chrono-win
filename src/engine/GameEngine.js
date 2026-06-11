@@ -1,4 +1,5 @@
 import Database from './Database.js';
+import PasswordPromptPanel from './PasswordPromptPanel.js';
 
 const STATE_IDLE = 'IDLE';
 const STATE_RUNNING = 'RUNNING';
@@ -10,6 +11,8 @@ const STATE_READY = 'READY';
 export default class GameEngine {
   constructor(theme) {
     this.theme = theme;
+    this.adminPanel = null;
+    this.isPromptActive = false;
     this.state = STATE_IDLE;
     this.isRunning = false;
     this.startTime = 0;
@@ -42,6 +45,10 @@ export default class GameEngine {
     if (newPassword !== undefined && newPassword.trim() !== '') {
       localStorage.setItem('chrono-win-admin-password', newPassword);
     }
+  }
+
+  setAdminPanel(adminPanel) {
+    this.adminPanel = adminPanel;
   }
 
   loadConfig() {
@@ -292,12 +299,22 @@ export default class GameEngine {
   }
 
   handleKeyDown(event) {
+    // Éviter le déclenchement répété lors d'un appui prolongé
+    if (event.repeat) {
+      return;
+    }
+
     // Ne pas déclencher si on est dans un champ de saisie
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || event.target.tagName === 'TEXTAREA') {
       return;
     }
 
     if (event.key === 'Escape') {
+      if (this.adminPanel && this.adminPanel.panelElement && !this.adminPanel.panelElement.classList.contains('hidden')) {
+        this.adminPanel.hidePanel();
+        return;
+      }
+
       if (this.state === STATE_FORM) {
         this.skipFormAndPlay();
       } else if (this.state === STATE_READY) {
@@ -308,26 +325,46 @@ export default class GameEngine {
       return;
     }
 
-    if (event.shiftKey && event.key.toLowerCase() === 'f') {
-      event.preventDefault();
-      // On peut rouvrir le formulaire si on est IDLE ou FINISHED
-      if (this.state === STATE_IDLE || this.state === STATE_FINISHED) {
-        this.openForm();
-      }
-      return;
-    }
+    // Vérifier si un popup/volet est actuellement ouvert
+    const adminOpen = this.adminPanel && this.adminPanel.panelElement && !this.adminPanel.panelElement.classList.contains('hidden');
+    const resultsPopup = document.getElementById('results-popup');
+    const resultsOpen = resultsPopup && !resultsPopup.classList.contains('hidden');
+    const formPopup = document.getElementById('form-popup');
+    const formOpen = formPopup && !formPopup.classList.contains('hidden');
+    const passwordOverlay = document.getElementById('password-prompt-overlay');
+    const passwordOpen = passwordOverlay && passwordOverlay.style.display === 'flex';
+    const isOverlayOpen = adminOpen || resultsOpen || formOpen || passwordOpen;
 
-    if (event.shiftKey && event.key.toLowerCase() === 'l') {
-      event.preventDefault();
-      if (this.state === STATE_IDLE || this.state === STATE_FINISHED) {
-        const pwd = prompt("Entrez le mot de passe pour accéder aux résultats :");
-        if (this.checkAdminPassword(pwd)) {
-          this.openResults();
-        } else if (pwd !== null) {
-          alert("Mot de passe incorrect");
+    if (!isOverlayOpen) {
+      if (event.shiftKey && event.key.toLowerCase() === 'a' && !event.ctrlKey && !event.metaKey) {
+        event.preventDefault();
+        if (this.adminPanel) {
+          this.adminPanel.togglePanel();
         }
+        return;
       }
-      return;
+
+      if (event.shiftKey && event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        // On peut rouvrir le formulaire si on est IDLE ou FINISHED
+        if (this.state === STATE_IDLE || this.state === STATE_FINISHED) {
+          this.openForm();
+        }
+        return;
+      }
+
+      if (event.shiftKey && event.key.toLowerCase() === 'l') {
+        event.preventDefault();
+        if (this.state === STATE_IDLE || this.state === STATE_FINISHED) {
+          const resultsPrompt = new PasswordPromptPanel({
+            title: "Accès aux résultats",
+            checkPassword: (pwd) => this.checkAdminPassword(pwd),
+            onSuccess: () => this.openResults()
+          });
+          resultsPrompt.show();
+        }
+        return;
+      }
     }
 
     if (event.key === 'Enter') {

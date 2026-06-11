@@ -1,20 +1,10 @@
+import PasswordPromptPanel from './PasswordPromptPanel.js';
+
 export default class AdminPanel {
   constructor(engine) {
     this.engine = engine;
     this.panelElement = document.getElementById('admin-panel');
     this.isAuthenticated = false;
-
-    this.bindEvents();
-  }
-
-  bindEvents() {
-    document.addEventListener('keydown', (e) => {
-      // Raccourci: Shift + A (utilise e.key pour gérer AZERTY/QWERTY correctement)
-      if (e.shiftKey && e.key.toLowerCase() === 'a' && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        this.togglePanel();
-      }
-    });
   }
 
   togglePanel() {
@@ -40,39 +30,27 @@ export default class AdminPanel {
   }
 
   renderLogin() {
-    this.panelElement.innerHTML = `
-      <h2 style="margin-top: 0;">Administration</h2>
-      <div style="margin-bottom: 1rem;">
-        <label style="display: block; margin-bottom: 0.5rem;">Mot de passe :</label>
-        <input type="password" id="admin-pwd" style="padding: 0.5rem; width: 100%; box-sizing: border-box;" />
-      </div>
-      <div style="display: flex; gap: 0.5rem;">
-        <button id="admin-login-btn" style="padding: 0.5rem 1rem; cursor: pointer;">Valider</button>
-        <button id="admin-close-btn" style="padding: 0.5rem 1rem; cursor: pointer;">Fermer</button>
-      </div>
-    `;
+    // Hide empty admin panel during prompt input
+    this.panelElement.classList.add('hidden');
 
-    document.getElementById('admin-login-btn').addEventListener('click', () => {
-      const pwd = document.getElementById('admin-pwd').value;
-      if (this.engine.checkAdminPassword(pwd)) {
+    const adminPrompt = new PasswordPromptPanel({
+      title: "Administration",
+      checkPassword: (pwd) => this.engine.checkAdminPassword(pwd),
+      onSuccess: () => {
         this.isAuthenticated = true;
+        this.panelElement.classList.remove('hidden');
         this.renderConfig();
-      } else {
-        alert("Mot de passe incorrect");
       }
     });
 
-    // Enter key support for login
-    document.getElementById('admin-pwd').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        document.getElementById('admin-login-btn').click();
-      }
-    });
+    // If cancel/escape is pressed in password prompt, make sure to hide the main admin panel too
+    const originalHide = adminPrompt.hide.bind(adminPrompt);
+    adminPrompt.hide = () => {
+      originalHide();
+      this.hidePanel();
+    };
 
-    document.getElementById('admin-close-btn').addEventListener('click', () => this.hidePanel());
-
-    // Focus the password input
-    setTimeout(() => document.getElementById('admin-pwd').focus(), 50);
+    adminPrompt.show();
   }
 
   getConfig() {

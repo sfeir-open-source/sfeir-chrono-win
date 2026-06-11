@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   const engine = new GameEngine(theme);
   const adminPanel = new AdminPanel(engine);
+  engine.setAdminPanel(adminPanel);
   
   // Initialisation du jeu (écoute Espace pour démarrer)
   engine.init();
